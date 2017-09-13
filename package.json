@@ -8,7 +8,8 @@
     "url": "git+https://github.com/revolunet/favicon.git"
   },
   "scripts": {
-    "start": "node index"
+    "start": "node index",
+    "deploy": "now && now alias"
   },
   "homepage": "https://revolunet.github.io/favicon/",
   "bugs": {

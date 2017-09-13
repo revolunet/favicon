@@ -8,11 +8,13 @@ const ROOT_URL = "https://favicon-src.now.sh"
 
 const demoUrls = [
   "http://tesla.com",
+  "http://apple.com",
   "http://twitter.com",
   "http://facebook.com",
   "http://zeit.co",
   "http://github.com",
-  "http://cnn.com"
+  "http://cnn.com",
+  "https://www.validator.pizza"
 ]
 
 app.get("/", (req, res) => {
@@ -24,10 +26,7 @@ app.get("/", (req, res) => {
     <p>See <a href="https://github.com/revolunet/favicon">https://github.com/revolunet/favicon</a></p>
     <p>&nbsp;</p>
     ${demoUrls
-      .map(
-        url =>
-          `<a href="${ROOT_URL}/${url}"><img alt="${ROOT_URL}/${url}" src="/${url}" width="16"/></a>`
-      )
+      .map(url => `<a href="/${url}"><img alt="${ROOT_URL}/${url}" src="/${url}" width="16"/></a>`)
       .join("\n")}
   `
   )
@@ -36,10 +35,19 @@ app.get("/", (req, res) => {
 app.get("*", (req, res) => {
   const url = req.originalUrl.substring(1)
   if (url.match(/^https?:\/\//)) {
-    fetchFavicon(url).then(buffer => {
-      res.set("Content-Type", fileType(buffer).mime)
-      res.send(buffer)
-    })
+    fetchFavicon(url)
+      .then(buffer => {
+        if (buffer.length) {
+          res.set("Content-Type", fileType(buffer).mime)
+          res.send(buffer)
+        } else {
+          res.status(500).end()
+        }
+      })
+      .catch(e => {
+        res.status(500).end()
+        console.error(e)
+      })
   }
 })
 
